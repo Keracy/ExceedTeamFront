@@ -3,7 +3,7 @@ import AddEmployeeModal from "../Modal";
 import TextField from "@material-ui/core/TextField";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import { setSearchWord } from "../../redux/actions/actions";
+import { setSearchWord, searchEmployees } from "../../redux/actions/actions";
 const useStyles = makeStyles({
   search_block: {
     display: "flex",
@@ -13,10 +13,9 @@ const useStyles = makeStyles({
 });
 
 const SearchBlock = (props) => {
-  const { setSearchWord } = props;
   const s = useStyles();
   const searchHandler = (event) => {
-    setSearchWord(event.target.value);
+    searchEmployees(event.target.value);
   };
 
   return (
@@ -35,6 +34,12 @@ const SearchBlock = (props) => {
 };
 const mapDispatchToProps = {
   setSearchWord,
+  searchEmployees,
+};
+const mapStateToProps = (state) => {
+  return {
+    searchWord: state.searchWord,
+  };
 };
 
-export default connect(null, mapDispatchToProps)(SearchBlock);
+export default connect(mapStateToProps, mapDispatchToProps)(SearchBlock);

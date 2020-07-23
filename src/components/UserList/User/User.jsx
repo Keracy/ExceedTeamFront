@@ -40,7 +40,7 @@ export default function User(props) {
             <CardActionArea>
               <CardMedia
                 className={s.media}
-                image={`https://robohash.org/${props.id}`}
+                image={`https://robohash.org/${props.id}?set=set5`}
                 title={props.name}
               />
               <CardContent>

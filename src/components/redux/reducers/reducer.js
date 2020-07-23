@@ -1,18 +1,34 @@
 import {
+  CHECK_AUTH_BEGIN,
+  CHECK_AUTH_SUCCEED,
+  CHECK_AUTH_FAIL,
   ADD_EMPLOYEE,
-  GET_USERS_BEGIN,
-  GET_USERS_SUCCEED,
-  GET_USERS_FAIL,
+  GET_EMPLOYEES_BEGIN,
+  GET_EMPLOYEES_SUCCEED,
+  GET_EMPLOYEES_FAIL,
   SET_SEARCH_WORD,
-  GET_USER_BEGIN,
-  GET_USER_SUCCEED,
-  GET_USER_FAIL,
-  ADD_USER_BEGIN,
-  ADD_USER_SUCCEED,
-  ADD_USER_FAIL,
-  DELETE_USER_BEGIN,
-  DELETE_USER_SUCCEED,
-  DELETE_USER_FAIL,
+  GET_EMPLOYEE_BEGIN,
+  GET_EMPLOYEE_SUCCEED,
+  GET_EMPLOYEE_FAIL,
+  ADD_EMPLOYEE_BEGIN,
+  ADD_EMPLOYEE_SUCCEED,
+  ADD_EMPLOYEE_FAIL,
+  DELETE_EMPLOYEE_BEGIN,
+  DELETE_EMPLOYEE_SUCCEED,
+  DELETE_EMPLOYEE_FAIL,
+  CHANGE_EMPLOYEE_BEGIN,
+  CHANGE_EMPLOYEE_SUCCEED,
+  CHANGE_EMPLOYEE_FAIL,
+  REGISTER_USER_BEGIN,
+  REGISTER_USER_SUCCEED,
+  REGISTER_USER_FAIL,
+  LOGIN_USER_BEGIN,
+  LOGIN_USER_SUCCEED,
+  LOGIN_USER_FAIL,
+  LOG_OUT,
+  SEARCH_EMPLOYEES_BEGIN,
+  SEARCH_EMPLOYEES_SUCCEED,
+  SEARCH_EMPLOYEES_FAIL,
 } from "../action-types";
 
 const initialState = {
@@ -35,51 +51,115 @@ const initialState = {
   err_msg: "",
   searchWord: "",
   loading: false,
-  currentUser: {},
+  currentEmployee: {},
+  registerEmailExist: null,
+  loggedUser: null,
+  isUserLogged: false,
 };
 
 export const rootReducer = (state = initialState, action) => {
   switch (action.type) {
+    case CHECK_AUTH_BEGIN:
+      return { ...state, loading: true };
+    case CHECK_AUTH_SUCCEED:
+      console.log(action.payload);
+      return { ...state, isUserLogged: Boolean(action.payload) };
+    case CHECK_AUTH_FAIL:
+      return { ...state, err_msg: action.err_msg };
     case SET_SEARCH_WORD:
       return { ...state, searchWord: action.payload };
     case ADD_EMPLOYEE:
       return { ...state, users: [...state.users, action.payload] };
-    case GET_USERS_BEGIN:
+    case GET_EMPLOYEES_BEGIN:
       return { ...state, loading: true };
-    case GET_USERS_SUCCEED:
+    case GET_EMPLOYEES_SUCCEED:
       return { ...state, loading: false, users: action.payload };
-    case GET_USERS_FAIL:
+    case GET_EMPLOYEES_FAIL:
       return { ...state, loading: false, err_msg: action.err };
-    case GET_USER_BEGIN:
+    case GET_EMPLOYEE_BEGIN:
       return { ...state, loading: true };
-    case GET_USER_SUCCEED:
+    case GET_EMPLOYEE_SUCCEED:
       return {
         ...state,
         loading: false,
-        currentUser: action.payload,
+        currentEmployee: action.payload,
       };
-    case GET_USER_FAIL:
+    case GET_EMPLOYEE_FAIL:
       return { ...state, loading: false, err_msg: action.err };
-    case ADD_USER_BEGIN:
+    case ADD_EMPLOYEE_BEGIN:
       return { ...state, loading: true };
-    case ADD_USER_SUCCEED:
+    case ADD_EMPLOYEE_SUCCEED:
       return {
         ...state,
         loading: false,
         users: [...state.users, action.payload],
       };
-    case ADD_USER_FAIL:
+    case ADD_EMPLOYEE_FAIL:
       return { ...state, loading: false, err_msg: action.err };
-    case DELETE_USER_BEGIN:
+    case DELETE_EMPLOYEE_BEGIN:
       return { ...state, loading: true };
-    case DELETE_USER_SUCCEED:
+    case DELETE_EMPLOYEE_SUCCEED:
       return {
         ...state,
         loading: false,
         users: state.users.filter((user) => user._id !== action.id),
       };
-    case DELETE_USER_FAIL:
+    case DELETE_EMPLOYEE_FAIL:
       return { ...state, loading: false, err_msg: action.err };
+    case CHANGE_EMPLOYEE_BEGIN:
+      return { ...state, loading: true };
+    case CHANGE_EMPLOYEE_SUCCEED:
+      if (action.payload.validationError) {
+        return {
+          ...state,
+          loading: false,
+        };
+      } else {
+        return {
+          ...state,
+          loading: false,
+          currentEmployee: action.payload,
+        };
+      }
+    case CHANGE_EMPLOYEE_FAIL:
+      return { ...state, loading: false, err_msg: action.err };
+    case REGISTER_USER_BEGIN:
+      return { ...state, loading: true };
+    case REGISTER_USER_SUCCEED:
+      return {
+        ...state,
+        loading: false,
+        registerEmailExist: action.registerEmailExist,
+      };
+    case REGISTER_USER_FAIL:
+      return { ...state, loading: false, err_msg: action.err_msg };
+    case LOGIN_USER_BEGIN:
+      return { ...state, loading: true };
+    case LOGIN_USER_SUCCEED:
+      let logged = false;
+      if (!(action.payload === "auth failed")) {
+        localStorage.setItem("auth-token", action.payload.authToken);
+        localStorage.setItem("logged-user", JSON.stringify(action.payload));
+        logged = true;
+      }
+      return {
+        ...state,
+        loading: false,
+        loggedUser: action.payload,
+        isUserLogged: logged,
+      };
+    case LOGIN_USER_FAIL:
+      return { ...state, loading: false, error: action.err_msg };
+    case LOG_OUT:
+      localStorage.clear();
+      return { ...state, isUserLogged: false };
+    case SEARCH_EMPLOYEES_BEGIN:
+      return { ...state, loading: true };
+    case SEARCH_EMPLOYEES_SUCCEED:
+      return { ...state, loading: false, users: action.payload };
+    case SEARCH_EMPLOYEES_FAIL:
+      return { ...state, loading: false, err_msg: action.err_msg };
+
     default:
       return state;
   }
