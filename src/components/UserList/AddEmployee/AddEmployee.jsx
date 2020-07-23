@@ -22,7 +22,19 @@ const AddEmployee = (props) => {
   const s = useStyles();
   const [newEmployee, setNewEmployee] = useState({});
   const changeHandler = (event) => {
-    setNewEmployee({ ...newEmployee, [event.target.name]: event.target.value });
+    switch (event.target.name) {
+      case "name":
+        setNewEmployee({ ...newEmployee, name: event.target.value });
+        break;
+      case "phone":
+        setNewEmployee({ ...newEmployee, phone: event.target.value });
+        break;
+      case "email":
+        setNewEmployee({ ...newEmployee, email: event.target.value });
+        break;
+      default:
+        break;
+    }
   };
   const submitHandler = (event) => {
     event.preventDefault();
