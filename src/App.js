@@ -38,7 +38,12 @@ function App(props) {
               path="/"
               component={UserList}
             />
-            <Route exact path="/projects" component={ProjectList} />
+            <PrivateRoute
+              auth={isUserLogged}
+              exact
+              path="/projects"
+              component={ProjectList}
+            />
             <Route exact path="/auth" component={LoginPage} />
             <Route exact path="/register" component={RegisterPage} />
             <PrivateRoute

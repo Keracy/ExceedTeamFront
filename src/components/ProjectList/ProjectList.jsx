@@ -1,32 +1,86 @@
 import React from "react";
+import MaterialTable from "material-table";
 import { connect } from "react-redux";
-import Project from "./Project/Project";
-import { makeStyles } from "@material-ui/core/styles";
+const ProjectsTable = (props) => {
+  const [state, setState] = React.useState({
+    columns: [
+      { title: "Title", field: "title" },
+      {
+        title: "Status",
+        field: "status",
+        lookup: { 0: "Paused", 1: "In Progress", 2: "Done" },
+      },
+      {
+        field: "devs",
+        title: "Avatar",
+        render: (rowData) => (
+          <img
+            alt="avatar"
+            src={rowData.url}
+            style={{ width: "50px", borderRadius: "50%" }}
+          />
+        ),
+      },
+      { title: "Developers", field: "devs" },
+      {
+        title: "Rate/h",
+        field: "rate",
+      },
+    ],
+    data: props.projects,
+  });
 
-const useStyles = makeStyles({
-  project_block: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-});
-
-const ProjectList = (props) => {
-  const s = useStyles();
-  const { projects } = props;
   return (
-    <div className={s.project_block}>
-      {projects.map((project) => {
-        return <Project title={project.name} />;
-      })}
-    </div>
+    <MaterialTable
+      title="Our Projects"
+      columns={state.columns}
+      data={state.data}
+      options={{ actionsColumnIndex: 5 }}
+      editable={{
+        onRowAdd: (newData) =>
+          new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+              setState((prevState) => {
+                const data = [...prevState.data];
+                data.push(newData);
+                return { ...prevState, data };
+              });
+            }, 500);
+          }),
+        onRowUpdate: (newData, oldData) =>
+          new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+              if (oldData) {
+                setState((prevState) => {
+                  const data = [...prevState.data];
+                  data[data.indexOf(oldData)] = newData;
+                  return { ...prevState, data };
+                });
+              }
+            }, 500);
+          }),
+        onRowDelete: (oldData) =>
+          new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+              setState((prevState) => {
+                const data = [...prevState.data];
+                data.splice(data.indexOf(oldData), 1);
+                return { ...prevState, data };
+              });
+            }, 500);
+          }),
+      }}
+    />
   );
 };
+
 const mapStateToProps = (state) => {
   return {
     projects: state.projects,
   };
 };
 
-export default connect(mapStateToProps)(ProjectList);
+export default connect(mapStateToProps)(ProjectsTable);

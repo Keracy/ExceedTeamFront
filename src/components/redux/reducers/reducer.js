@@ -35,15 +35,24 @@ const initialState = {
   users: [],
   projects: [
     {
-      name: "CRM-System",
+      title: "CRM-System",
+      status: 2,
+      rate: "25$",
+      devs: [],
       id: 0,
     },
     {
-      name: "Podcast Platform",
+      title: "Podcast Platform",
+      status: 1,
+      rate: "65$",
+      devs: [],
       id: 1,
     },
     {
-      name: "Social Network 'Kartana'",
+      title: "Social Network 'Kartana'",
+      status: 0,
+      rate: "15$",
+      devs: [],
       id: 2,
     },
   ],
