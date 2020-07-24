@@ -1,7 +1,32 @@
 import React from "react";
 import MaterialTable from "material-table";
 import { connect } from "react-redux";
+import { Typography, Avatar, Button } from "@material-ui/core";
+import { Redirect, Link } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
+import Popover from "@material-ui/core/Popover";
+
+const useStyles = makeStyles((theme) => ({
+  popover: {
+    pointerEvents: "none",
+  },
+  paper: {
+    padding: theme.spacing(1),
+  },
+}));
 const ProjectsTable = (props) => {
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handlePopoverOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
+
   const [state, setState] = React.useState({
     columns: [
       { title: "Title", field: "title" },
@@ -12,16 +37,53 @@ const ProjectsTable = (props) => {
       },
       {
         field: "devs",
-        title: "Avatar",
+        title: "Developers",
         render: (rowData) => (
-          <img
-            alt="avatar"
-            src={rowData.url}
-            style={{ width: "50px", borderRadius: "50%" }}
-          />
+          <div style={{ display: "flex" }}>
+            {rowData.devs.map((id) => (
+              <div>
+                <Typography
+                  aria-owns={open ? "mouse-over-popover" : undefined}
+                  aria-haspopup="true"
+                  onMouseEnter={handlePopoverOpen}
+                  onMouseLeave={handlePopoverClose}
+                >
+                  <Link to={`/${id}`}>
+                    <Button>
+                      <img
+                        alt="avatar"
+                        src={`https://robohash.org/${id}?set=set5`}
+                        style={{ width: 50, borderRadius: "50%" }}
+                      />
+                    </Button>
+                  </Link>
+                </Typography>
+                <Popover
+                  id="mouse-over-popover"
+                  className={classes.popover}
+                  classes={{
+                    paper: classes.paper,
+                  }}
+                  open={open}
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  onClose={handlePopoverClose}
+                  disableRestoreFocus
+                >
+                  <Typography>I use Popover.</Typography>
+                </Popover>
+              </div>
+            ))}
+          </div>
         ),
       },
-      { title: "Developers", field: "devs" },
       {
         title: "Rate/h",
         field: "rate",
