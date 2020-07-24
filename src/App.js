@@ -10,9 +10,10 @@ import RegisterPage from "./components/RegisterPage/RegisterPage.jsx";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import { connect } from "react-redux";
 import { checkAuth } from "./components/redux/actions/actions";
+import { CircularProgress } from "@material-ui/core";
 
 function App(props) {
-  const { isUserLogged, checkAuth } = props;
+  const { isUserLogged, checkAuth, isTokenCompared } = props;
   useEffect(() => {
     if (
       localStorage.getItem("auth-token") &&
@@ -21,24 +22,36 @@ function App(props) {
       const token = localStorage.getItem("auth-token");
       const id = JSON.parse(localStorage.getItem("logged-user"));
       checkAuth(token, id);
+    } else {
+      checkAuth("", "");
     }
   }, [isUserLogged, localStorage]);
   return (
     <BrowserRouter>
       <div className="App">
         <Navbar />
-        <Switch>
-          <PrivateRoute
-            auth={isUserLogged}
-            exact
-            path="/"
-            component={UserList}
-          />
-          <Route exact path="/projects" component={ProjectList} />
-          <Route exact path="/auth" component={LoginPage} />
-          <Route exact path="/register" component={RegisterPage} />
-          <Route path="/:userId" component={UserPage} />
-        </Switch>
+        {isTokenCompared ? (
+          <Switch>
+            <PrivateRoute
+              auth={isUserLogged}
+              exact
+              path="/"
+              component={UserList}
+            />
+            <Route exact path="/projects" component={ProjectList} />
+            <Route exact path="/auth" component={LoginPage} />
+            <Route exact path="/register" component={RegisterPage} />
+            <PrivateRoute
+              auth={isUserLogged}
+              path="/:userId"
+              component={UserPage}
+            />
+          </Switch>
+        ) : (
+          <div>
+            <CircularProgress />
+          </div>
+        )}
       </div>
     </BrowserRouter>
   );
@@ -46,6 +59,7 @@ function App(props) {
 const mapStateToProps = (state) => {
   return {
     isUserLogged: state.isUserLogged,
+    isTokenCompared: state.isTokenCompared,
   };
 };
 const mapDispatchToProps = {

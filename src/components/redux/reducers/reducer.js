@@ -55,17 +55,21 @@ const initialState = {
   registerEmailExist: null,
   loggedUser: null,
   isUserLogged: false,
+  isTokenCompared: false,
 };
 
 export const rootReducer = (state = initialState, action) => {
   switch (action.type) {
     case CHECK_AUTH_BEGIN:
-      return { ...state, loading: true };
+      return { ...state, loading: true, isTokenCompared: false };
     case CHECK_AUTH_SUCCEED:
-      console.log(action.payload);
-      return { ...state, isUserLogged: Boolean(action.payload) };
+      return {
+        ...state,
+        isUserLogged: Boolean(action.payload),
+        isTokenCompared: true,
+      };
     case CHECK_AUTH_FAIL:
-      return { ...state, err_msg: action.err_msg };
+      return { ...state, err_msg: action.err_msg, isTokenCompared: true };
     case SET_SEARCH_WORD:
       return { ...state, searchWord: action.payload };
     case ADD_EMPLOYEE:
