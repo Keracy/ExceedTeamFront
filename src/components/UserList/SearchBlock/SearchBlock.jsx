@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import AddEmployeeModal from "../Modal";
 import TextField from "@material-ui/core/TextField";
 import { connect } from "react-redux";
@@ -15,8 +15,15 @@ const useStyles = makeStyles({
 
 const SearchBlock = (props) => {
   const s = useStyles();
+  const [searchTimeout, setSearchTimeout] = useState();
   const searchHandler = (event) => {
-    props.searchEmployees(event.target.value);
+    const value = event.target.value;
+    clearTimeout(searchTimeout);
+    setSearchTimeout(
+      setTimeout(() => {
+        props.searchEmployees(value);
+      }, 500)
+    );
   };
 
   return (

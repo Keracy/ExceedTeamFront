@@ -10,9 +10,19 @@ import RegisterPage from "./components/RegisterPage/RegisterPage.jsx";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import { connect } from "react-redux";
 import { checkAuth } from "./components/redux/actions/actions";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress, makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles({
+  progress: {
+    height: "85vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
 function App(props) {
+  const s = useStyles();
   const { isUserLogged, checkAuth, isTokenCompared } = props;
   useEffect(() => {
     if (
@@ -25,7 +35,7 @@ function App(props) {
     } else {
       checkAuth("", "");
     }
-  }, [isUserLogged, localStorage]);
+  }, [isUserLogged, checkAuth]);
   return (
     <BrowserRouter>
       <div className="App">
@@ -53,7 +63,7 @@ function App(props) {
             />
           </Switch>
         ) : (
-          <div>
+          <div className={s.progress}>
             <CircularProgress />
           </div>
         )}

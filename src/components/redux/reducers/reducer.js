@@ -29,45 +29,21 @@ import {
   SEARCH_EMPLOYEES_BEGIN,
   SEARCH_EMPLOYEES_SUCCEED,
   SEARCH_EMPLOYEES_FAIL,
+  ADD_PROJECT_BEGIN,
+  ADD_PROJECT_FAIL,
+  ADD_PROJECT_SUCCEED,
+  GET_PROJECTS_BEGIN,
+  GET_PROJECTS_SUCCEED,
+  GET_PROJECTS_FAIL,
 } from "../action-types";
 
 const initialState = {
   users: [],
-  projects: [
-    {
-      title: "CRM-System",
-      status: 2,
-      rate: "25$",
-      devs: ["5f199aac9da0564406a795ba", "5f16fd345d3fa22d8eeb7eed"],
-      id: 0,
-    },
-    {
-      title: "Podcast Platform",
-      status: 1,
-      rate: "65$",
-      devs: [
-        "5f1ae8bca62b7a09b25e012b",
-        "5f1ae8f6a62b7a09b25e012c",
-        "5f1ae966a62b7a09b25e012e",
-      ],
-      id: 1,
-    },
-    {
-      title: "Social Network 'Kartana'",
-      status: 0,
-      rate: "15$",
-      devs: [
-        "5f1ae860a62b7a09b25e0129",
-        "5f1ae887a62b7a09b25e012a",
-        "5f1ae934a62b7a09b25e012d",
-      ],
-      id: 2,
-    },
-  ],
-  loaderActive: false,
+  projects: [],
   err_msg: "",
   searchWord: "",
   loading: false,
+  projectsLoaded: false,
   currentEmployee: {},
   registerEmailExist: null,
   loggedUser: null,
@@ -170,7 +146,7 @@ export const rootReducer = (state = initialState, action) => {
         isUserLogged: logged,
       };
     case LOGIN_USER_FAIL:
-      return { ...state, loading: false, error: action.err_msg };
+      return { ...state, loading: false, err_msg: action.err_msg };
     case LOG_OUT:
       localStorage.clear();
       return { ...state, isUserLogged: false };
@@ -180,7 +156,28 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, loading: false, users: action.payload };
     case SEARCH_EMPLOYEES_FAIL:
       return { ...state, loading: false, err_msg: action.err_msg };
-
+    case ADD_PROJECT_BEGIN:
+      return { ...state, loading: true };
+    case ADD_PROJECT_SUCCEED:
+      return { ...state, loading: false, projects: action.payload };
+    case ADD_PROJECT_FAIL:
+      return { ...state, loading: false, err_msg: action.err_msg };
+    case GET_PROJECTS_BEGIN:
+      return { ...state, loading: true };
+    case GET_PROJECTS_SUCCEED:
+      return {
+        ...state,
+        loading: false,
+        projectsLoaded: true,
+        projects: action.payload,
+      };
+    case GET_PROJECTS_FAIL:
+      return {
+        ...state,
+        loading: false,
+        projectsLoaded: true,
+        err_msg: action.err_msg,
+      };
     default:
       return state;
   }

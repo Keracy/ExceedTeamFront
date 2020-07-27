@@ -28,6 +28,15 @@ import {
   SEARCH_EMPLOYEES_BEGIN,
   SEARCH_EMPLOYEES_SUCCEED,
   SEARCH_EMPLOYEES_FAIL,
+  ADD_PROJECT_BEGIN,
+  ADD_PROJECT_SUCCEED,
+  ADD_PROJECT_FAIL,
+  GET_PROJECTS_BEGIN,
+  GET_PROJECTS_SUCCEED,
+  GET_PROJECTS_FAIL,
+  DELETE_PROJECT_BEGIN,
+  DELETE_PROJECT_SUCCEED,
+  DELETE_PROJECT_FAIL,
 } from "../action-types";
 import axios from "axios";
 export const setSearchWord = (payload) => {
@@ -180,4 +189,45 @@ export const changeEmployee = (id, payload) => {
 
 export const logOut = () => {
   return { type: LOG_OUT };
+};
+
+export const addProject = (payload) => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: ADD_PROJECT_BEGIN });
+      const project = await axios.post(
+        `http://localhost:${process.env.REACT_APP_PORT}/projects`,
+        payload
+      );
+      dispatch({ type: ADD_PROJECT_SUCCEED, payload: project });
+    } catch (err) {
+      dispatch({ type: ADD_PROJECT_FAIL, err_msg: err });
+    }
+  };
+};
+
+export const getProjects = () => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: GET_PROJECTS_BEGIN });
+      const { data } = await axios.get(
+        `http://localhost:${process.env.REACT_APP_PORT}/projects`
+      );
+      dispatch({ type: GET_PROJECTS_SUCCEED, payload: data });
+    } catch (err) {
+      dispatch({ type: GET_PROJECTS_FAIL, err_msg: err });
+    }
+  };
+};
+
+export const deleteProject = (id) => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: DELETE_PROJECT_BEGIN });
+      await axios.delete("/", id);
+      dispatch({ type: DELETE_PROJECT_SUCCEED, payload: "Done" });
+    } catch (err) {
+      dispatch({ type: DELETE_PROJECT_FAIL, err_msg: err });
+    }
+  };
 };
