@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableEditField } from "material-table";
 import { connect } from "react-redux";
 import {
   Button,
   CircularProgress,
-  Avatar,
   Typography,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import {
@@ -28,6 +29,7 @@ const useStyles = makeStyles({
 });
 
 const ProjectsTable = (props) => {
+  const { employees } = props;
   const s = useStyles();
   useEffect(() => {
     props.getProjects();
@@ -36,7 +38,6 @@ const ProjectsTable = (props) => {
       setTableState((prevValue) => ({ ...prevValue, data: props.projects }));
     }
   }, [props.projectsLoaded]);
-  console.log(props.employees);
   const [tableState, setTableState] = useState({
     columns: [
       { title: "Title", field: "title" },
@@ -52,18 +53,6 @@ const ProjectsTable = (props) => {
       {
         field: "devs",
         title: "Developers",
-        lookup: props.loading
-          ? null
-          : props.employees.map((employee) => (
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <img
-                  alt="avatar"
-                  src={`https://robohash.org/${employee._id}?set=set5`}
-                  style={{ width: 50, borderRadius: "50%" }}
-                />
-                <Typography>{employee.name}</Typography>
-              </div>
-            )),
         render: (rowData) => (
           <div style={{ display: "flex" }}>
             {rowData.devs.map((dev) => (
@@ -92,6 +81,27 @@ const ProjectsTable = (props) => {
       columns={tableState.columns}
       data={tableState.data}
       options={{ actionsColumnIndex: 5 }}
+      components={{
+        EditField: (props) =>
+          props.columnDef.field === "devs" ? (
+            <Select value={employees} multiple>
+              {employees.map((employee) => (
+                <MenuItem>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      alt="avatar"
+                      src={`https://robohash.org/${employee._id}?set=set5`}
+                      style={{ width: 50, borderRadius: "50%" }}
+                    />
+                    <Typography>{employee.name}</Typography>
+                  </div>
+                </MenuItem>
+              ))}
+            </Select>
+          ) : (
+            <MTableEditField {...props} />
+          ),
+      }}
       editable={{
         onRowAdd: (newData) =>
           new Promise((resolve) => {

@@ -9,9 +9,10 @@ const useStyles = makeStyles({
     textAlign: "center",
     padding: "10px",
     borderRadius: "30px",
+    color: "white",
   },
-  done: { backgroundColor: "#33FF66" },
-  paused: { backgroundColor: "#CCCCCC	" },
+  done: { backgroundColor: "#33FF33" },
+  paused: { backgroundColor: "#666666" },
   progress: { backgroundColor: "#00CCFF" },
 });
 
