@@ -34,7 +34,7 @@ const UserList = (props) => {
         </div>
       ) : (
         <Grid container spacing={5}>
-          {props.users.map((user) => (
+          {props.employees.map((user) => (
             <Grid item lg={3} md={4} sm={6}>
               <User
                 key={user._id}
@@ -52,7 +52,7 @@ const UserList = (props) => {
 };
 const mapStateToProps = (state) => {
   return {
-    users: state.users,
+    employees: state.employees,
     searchWord: state.searchWord,
     loading: state.loading,
   };

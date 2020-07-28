@@ -16,6 +16,7 @@ const Navbar = (props) => {
       </Link>
       {isUserLogged ? (
         <Link
+          to="/auth"
           className={s.nav_link}
           onClick={() => {
             props.logOut();

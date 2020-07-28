@@ -37,6 +37,9 @@ import {
   DELETE_PROJECT_BEGIN,
   DELETE_PROJECT_SUCCEED,
   DELETE_PROJECT_FAIL,
+  EDIT_PROJECT_BEGIN,
+  EDIT_PROJECT_SUCCEED,
+  EDIT_PROJECT_FAIL,
 } from "../action-types";
 import axios from "axios";
 export const setSearchWord = (payload) => {
@@ -148,7 +151,6 @@ export const addEmployee = (payload) => {
         `http://localhost:${process.env.REACT_APP_PORT}/employees/`,
         payload
       );
-      console.log(data);
       dispatch({ type: ADD_EMPLOYEE_SUCCEED, payload: data });
     } catch (err) {
       dispatch({ type: ADD_EMPLOYEE_FAIL });
@@ -195,11 +197,11 @@ export const addProject = (payload) => {
   return async (dispatch) => {
     try {
       dispatch({ type: ADD_PROJECT_BEGIN });
-      const project = await axios.post(
+      const { data } = await axios.post(
         `http://localhost:${process.env.REACT_APP_PORT}/projects`,
         payload
       );
-      dispatch({ type: ADD_PROJECT_SUCCEED, payload: project });
+      dispatch({ type: ADD_PROJECT_SUCCEED, payload: data });
     } catch (err) {
       dispatch({ type: ADD_PROJECT_FAIL, err_msg: err });
     }
@@ -220,14 +222,32 @@ export const getProjects = () => {
   };
 };
 
-export const deleteProject = (id) => {
+export const deleteProject = (project) => {
   return async (dispatch) => {
     try {
       dispatch({ type: DELETE_PROJECT_BEGIN });
-      await axios.delete("/", id);
-      dispatch({ type: DELETE_PROJECT_SUCCEED, payload: "Done" });
+      await axios.delete(
+        `http://localhost:${process.env.REACT_APP_PORT}/projects`,
+        { data: project }
+      );
+      dispatch({ type: DELETE_PROJECT_SUCCEED, payload: project });
     } catch (err) {
       dispatch({ type: DELETE_PROJECT_FAIL, err_msg: err });
+    }
+  };
+};
+
+export const editProject = (payload) => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: EDIT_PROJECT_BEGIN });
+      const { data } = await axios.patch(
+        `http://localhost:${process.env.REACT_APP_PORT}/projects`,
+        payload
+      );
+      dispatch({ type: EDIT_PROJECT_SUCCEED, payload: data });
+    } catch (err) {
+      dispatch({ type: EDIT_PROJECT_FAIL, err_msg: err });
     }
   };
 };

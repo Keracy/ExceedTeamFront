@@ -35,10 +35,16 @@ import {
   GET_PROJECTS_BEGIN,
   GET_PROJECTS_SUCCEED,
   GET_PROJECTS_FAIL,
+  DELETE_PROJECT_BEGIN,
+  DELETE_PROJECT_SUCCEED,
+  DELETE_PROJECT_FAIL,
+  EDIT_PROJECT_BEGIN,
+  EDIT_PROJECT_SUCCEED,
+  EDIT_PROJECT_FAIL,
 } from "../action-types";
 
 const initialState = {
-  users: [],
+  employees: [],
   projects: [],
   err_msg: "",
   searchWord: "",
@@ -70,7 +76,7 @@ export const rootReducer = (state = initialState, action) => {
     case GET_EMPLOYEES_BEGIN:
       return { ...state, loading: true };
     case GET_EMPLOYEES_SUCCEED:
-      return { ...state, loading: false, users: action.payload };
+      return { ...state, loading: false, employees: action.payload };
     case GET_EMPLOYEES_FAIL:
       return { ...state, loading: false, err_msg: action.err };
     case GET_EMPLOYEE_BEGIN:
@@ -159,7 +165,11 @@ export const rootReducer = (state = initialState, action) => {
     case ADD_PROJECT_BEGIN:
       return { ...state, loading: true };
     case ADD_PROJECT_SUCCEED:
-      return { ...state, loading: false, projects: action.payload };
+      return {
+        ...state,
+        loading: false,
+        projects: [...state.projects, action.payload],
+      };
     case ADD_PROJECT_FAIL:
       return { ...state, loading: false, err_msg: action.err_msg };
     case GET_PROJECTS_BEGIN:
@@ -178,6 +188,28 @@ export const rootReducer = (state = initialState, action) => {
         projectsLoaded: true,
         err_msg: action.err_msg,
       };
+    case DELETE_PROJECT_BEGIN:
+      return { ...state };
+    case DELETE_PROJECT_SUCCEED:
+      return {
+        ...state,
+        projects: state.projects.filter(
+          (project) => project._id !== action.payload._id
+        ),
+      };
+    case DELETE_PROJECT_FAIL:
+      return { ...state, err_msg: action.err_msg };
+    case EDIT_PROJECT_BEGIN:
+      return { ...state };
+    case EDIT_PROJECT_SUCCEED:
+      return {
+        ...state,
+        projects: state.projects.map((project) =>
+          project._id === action.payload._id ? action.payload : project
+        ),
+      };
+    case EDIT_PROJECT_FAIL:
+      return { ...state, err_msg: action.err_msg };
     default:
       return state;
   }

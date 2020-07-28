@@ -28,7 +28,6 @@ const AddEmployee = (props) => {
     event.preventDefault();
     props.addEmployee(newEmployee);
     props.handleClose();
-    console.log(props.users);
   };
   return (
     <div className={s.employee_block}>

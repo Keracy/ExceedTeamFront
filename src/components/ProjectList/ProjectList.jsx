@@ -1,9 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MaterialTable from "material-table";
 import { connect } from "react-redux";
-import { Button, CircularProgress } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  Avatar,
+  Typography,
+} from "@material-ui/core";
 import { Link } from "react-router-dom";
-import { addProject, getProjects } from "../redux/actions/actions";
+import {
+  addProject,
+  getProjects,
+  deleteProject,
+  editProject,
+  getEmployees,
+} from "../redux/actions/actions";
+import Status from "./Status/Status";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
@@ -19,25 +31,43 @@ const ProjectsTable = (props) => {
   const s = useStyles();
   useEffect(() => {
     props.getProjects();
+    props.getEmployees();
     if (props.projectsLoaded) {
-      setState((prevValue) => ({ ...prevValue, data: props.projects }));
+      setTableState((prevValue) => ({ ...prevValue, data: props.projects }));
     }
   }, [props.projectsLoaded]);
-  const [state, setState] = React.useState({
+  console.log(props.employees);
+  const [tableState, setTableState] = useState({
     columns: [
       { title: "Title", field: "title" },
       {
         title: "Status",
         field: "status",
-        lookup: { 0: "Paused", 1: "In Progress", 2: "Done" },
+        lookup: {
+          0: <Status statusTitle="Paused" />,
+          1: <Status statusTitle="In Progress" />,
+          2: <Status statusTitle="Done" />,
+        },
       },
       {
         field: "devs",
         title: "Developers",
+        lookup: props.loading
+          ? null
+          : props.employees.map((employee) => (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  alt="avatar"
+                  src={`https://robohash.org/${employee._id}?set=set5`}
+                  style={{ width: 50, borderRadius: "50%" }}
+                />
+                <Typography>{employee.name}</Typography>
+              </div>
+            )),
         render: (rowData) => (
           <div style={{ display: "flex" }}>
             {rowData.devs.map((dev) => (
-              <Link to={`/${dev}`}>
+              <Link to={`/${dev}`} key={dev}>
                 <Button>
                   <img
                     alt="avatar"
@@ -56,23 +86,23 @@ const ProjectsTable = (props) => {
       },
     ],
   });
-
   return (
     <MaterialTable
       title="Our Projects"
-      columns={state.columns}
-      data={state.data}
+      columns={tableState.columns}
+      data={tableState.data}
       options={{ actionsColumnIndex: 5 }}
       editable={{
         onRowAdd: (newData) =>
           new Promise((resolve) => {
             setTimeout(() => {
               resolve();
-              setState((prevState) => {
+              setTableState((prevState) => {
                 const data = [...prevState.data];
                 data.push(newData);
                 newData.devs = newData.devs.split(",");
                 props.addProject(newData);
+                return { ...prevState, data: data };
               });
             }, 500);
           }),
@@ -81,9 +111,10 @@ const ProjectsTable = (props) => {
             setTimeout(() => {
               resolve();
               if (oldData) {
-                setState((prevState) => {
+                setTableState((prevState) => {
                   const data = [...prevState.data];
                   data[data.indexOf(oldData)] = newData;
+                  props.editProject(newData);
                   return { ...prevState, data };
                 });
               }
@@ -93,9 +124,10 @@ const ProjectsTable = (props) => {
           new Promise((resolve) => {
             setTimeout(() => {
               resolve();
-              setState((prevState) => {
+              setTableState((prevState) => {
                 const data = [...prevState.data];
                 data.splice(data.indexOf(oldData), 1);
+                props.deleteProject(oldData);
                 return { ...prevState, data };
               });
             }, 500);
@@ -107,13 +139,18 @@ const ProjectsTable = (props) => {
 
 const mapStateToProps = (state) => {
   return {
+    employees: state.employees,
     projects: state.projects,
     projectsLoaded: state.projectsLoaded,
+    loading: state.loading,
   };
 };
 const mapDispatchToProps = {
   addProject,
   getProjects,
+  deleteProject,
+  editProject,
+  getEmployees,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectsTable);
