@@ -7,7 +7,7 @@ const useStyles = makeStyles({
   status: {
     width: "120px",
     textAlign: "center",
-    padding: "10px",
+    padding: "7px",
     borderRadius: "30px",
     color: "white",
   },

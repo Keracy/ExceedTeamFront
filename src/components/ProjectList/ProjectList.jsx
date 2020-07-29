@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MaterialTable, { MTableEditField } from "material-table";
 import { connect } from "react-redux";
-import {
-  Button,
-  CircularProgress,
-  Typography,
-  Select,
-  MenuItem,
-} from "@material-ui/core";
+import { Button, Typography, Select, MenuItem } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import {
   addProject,
@@ -30,11 +24,12 @@ const useStyles = makeStyles({
 
 const ProjectsTable = (props) => {
   const { employees } = props;
+  const [devsName, setDevsName] = useState([]);
   const s = useStyles();
   useEffect(() => {
     props.getProjects();
     props.getEmployees();
-    if (props.projectsLoaded) {
+    if (props.projectsLoaded && !props.loading) {
       setTableState((prevValue) => ({ ...prevValue, data: props.projects }));
     }
   }, [props.projectsLoaded]);
@@ -76,74 +71,98 @@ const ProjectsTable = (props) => {
     ],
   });
   return (
-    <MaterialTable
-      title="Our Projects"
-      columns={tableState.columns}
-      data={tableState.data}
-      options={{ actionsColumnIndex: 5 }}
-      components={{
-        EditField: (props) =>
-          props.columnDef.field === "devs" ? (
-            <Select value={employees} multiple>
-              {employees.map((employee) => (
-                <MenuItem>
-                  <div style={{ display: "flex", alignItems: "center" }}>
+    <>
+      <MaterialTable
+        title="Our Projects"
+        columns={tableState.columns}
+        data={tableState.data}
+        options={{ actionsColumnIndex: 5 }}
+        components={{
+          EditField: (props) => {
+            // console.log(props);
+
+            return props.columnDef.field === "devs" ? (
+              <Select
+                renderValue={(value) => {
+                  return value.map((id) => (
                     <img
                       alt="avatar"
-                      src={`https://robohash.org/${employee._id}?set=set5`}
+                      src={`https://robohash.org/${id}?set=set5`}
                       style={{ width: 50, borderRadius: "50%" }}
                     />
-                    <Typography>{employee.name}</Typography>
-                  </div>
-                </MenuItem>
-              ))}
-            </Select>
-          ) : (
-            <MTableEditField {...props} />
-          ),
-      }}
-      editable={{
-        onRowAdd: (newData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              setTableState((prevState) => {
-                const data = [...prevState.data];
-                data.push(newData);
-                newData.devs = newData.devs.split(",");
-                props.addProject(newData);
-                return { ...prevState, data: data };
-              });
-            }, 500);
-          }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              if (oldData) {
+                  ));
+                }}
+                multiple
+                value={[...devsName, ...props.rowData.devs]}
+                onChange={(event) => {
+                  const filteredDevs = event.target.value.filter((item) => {
+                    if (!props.rowData.devs.some((item2) => item2 === item))
+                      return item;
+                  });
+                  setDevsName(filteredDevs);
+                }}
+              >
+                {employees.map((employee) => (
+                  <MenuItem key={employee._id} value={employee._id}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <img
+                        alt="avatar"
+                        src={`https://robohash.org/${employee._id}?set=set5`}
+                        style={{ width: 50, borderRadius: "50%" }}
+                      />
+                      <Typography>{employee.name}</Typography>
+                    </div>
+                  </MenuItem>
+                ))}
+              </Select>
+            ) : (
+              <MTableEditField {...props} />
+            );
+          },
+        }}
+        editable={{
+          onRowAdd: (newData) =>
+            new Promise((resolve) => {
+              setTimeout(() => {
+                resolve();
                 setTableState((prevState) => {
                   const data = [...prevState.data];
-                  data[data.indexOf(oldData)] = newData;
-                  props.editProject(newData);
+                  data.push(newData);
+                  newData.devs = newData.devs.split(",");
+                  props.addProject(newData);
+                  return { ...prevState, data: data };
+                });
+              }, 500);
+            }),
+          onRowUpdate: (newData, oldData) =>
+            new Promise((resolve) => {
+              setTimeout(() => {
+                resolve();
+                if (oldData) {
+                  setTableState((prevState) => {
+                    const data = [...prevState.data];
+                    data[data.indexOf(oldData)] = newData;
+                    props.editProject(newData);
+                    return { ...prevState, data };
+                  });
+                }
+              }, 500);
+            }),
+          onRowDelete: (oldData) =>
+            new Promise((resolve) => {
+              setTimeout(() => {
+                resolve();
+                setTableState((prevState) => {
+                  const data = [...prevState.data];
+                  data.splice(data.indexOf(oldData), 1);
+                  props.deleteProject(oldData);
                   return { ...prevState, data };
                 });
-              }
-            }, 500);
-          }),
-        onRowDelete: (oldData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              setTableState((prevState) => {
-                const data = [...prevState.data];
-                data.splice(data.indexOf(oldData), 1);
-                props.deleteProject(oldData);
-                return { ...prevState, data };
-              });
-            }, 500);
-          }),
-      }}
-    />
+              }, 500);
+            }),
+        }}
+      />
+    </>
   );
 };
 
