@@ -40,7 +40,8 @@ export default function User(props) {
             <CardActionArea>
               <CardMedia
                 className={s.media}
-                image={`https://robohash.org/${props.id}?set=set5`}
+                // image={`https://robohash.org/${props.id}?set=set5`}
+                image="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Brendan_Eich_Mozilla_Foundation_official_photo.jpg/1024px-Brendan_Eich_Mozilla_Foundation_official_photo.jpg"
                 title={props.name}
               />
               <CardContent>

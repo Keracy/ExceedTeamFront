@@ -151,6 +151,7 @@ export const addEmployee = (payload) => {
         `http://localhost:${process.env.REACT_APP_PORT}/employees/`,
         payload
       );
+      console.log(data);
       dispatch({ type: ADD_EMPLOYEE_SUCCEED, payload: data });
     } catch (err) {
       dispatch({ type: ADD_EMPLOYEE_FAIL });

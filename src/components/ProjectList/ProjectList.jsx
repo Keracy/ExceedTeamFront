@@ -55,7 +55,8 @@ const ProjectsTable = (props) => {
                 <Button>
                   <img
                     alt="avatar"
-                    src={`https://robohash.org/${dev}?set=set5`}
+                    // src={`https://robohash.org/${dev}?set=set5`}
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Brendan_Eich_Mozilla_Foundation_official_photo.jpg/1024px-Brendan_Eich_Mozilla_Foundation_official_photo.jpg"
                     style={{ width: 50, borderRadius: "50%" }}
                   />
                 </Button>
@@ -80,7 +81,6 @@ const ProjectsTable = (props) => {
         components={{
           EditField: (props) => {
             // console.log(props);
-
             return props.columnDef.field === "devs" ? (
               <Select
                 renderValue={(value) => {
@@ -93,11 +93,18 @@ const ProjectsTable = (props) => {
                   ));
                 }}
                 multiple
-                value={[...devsName, ...props.rowData.devs]}
+                value={props.rowData.devs ? [...props.rowData.devs] : []}
                 onChange={(event) => {
                   const filteredDevs = event.target.value.filter((item) => {
-                    if (!props.rowData.devs.some((item2) => item2 === item))
+                    if (!props.rowData.devs) {
+                      props.rowData.devs = [];
+                      props.rowData.devs.push(item);
                       return item;
+                    }
+                    if (!props.rowData.devs.some((item2) => item2 === item)) {
+                      props.rowData.devs.push(item);
+                      return item;
+                    }
                   });
                   setDevsName(filteredDevs);
                 }}
@@ -123,16 +130,14 @@ const ProjectsTable = (props) => {
         editable={{
           onRowAdd: (newData) =>
             new Promise((resolve) => {
-              setTimeout(() => {
-                resolve();
-                setTableState((prevState) => {
-                  const data = [...prevState.data];
-                  data.push(newData);
-                  newData.devs = newData.devs.split(",");
-                  props.addProject(newData);
-                  return { ...prevState, data: data };
-                });
-              }, 500);
+              resolve();
+              setTableState((prevState) => {
+                const data = [...prevState.data];
+                data.push(newData);
+                console.log(newData);
+                props.addProject(newData);
+                return { ...prevState, data: data };
+              });
             }),
           onRowUpdate: (newData, oldData) =>
             new Promise((resolve) => {
@@ -142,6 +147,7 @@ const ProjectsTable = (props) => {
                   setTableState((prevState) => {
                     const data = [...prevState.data];
                     data[data.indexOf(oldData)] = newData;
+                    console.log(newData);
                     props.editProject(newData);
                     return { ...prevState, data };
                   });

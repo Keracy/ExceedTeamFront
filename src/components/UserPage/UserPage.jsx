@@ -129,7 +129,9 @@ const UserPage = (props) => {
           <div className={s.avatarBlock}>
             <img
               className={s.avatar}
-              src={`https://robohash.org/${user._id}?set=set5`}
+              // src={`https://robohash.org/${user._id}?set=set5`}
+              width="300"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Brendan_Eich_Mozilla_Foundation_official_photo.jpg/1024px-Brendan_Eich_Mozilla_Foundation_official_photo.jpg"
               alt=""
             />
           </div>
