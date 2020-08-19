@@ -1,0 +1,46 @@
+import React from "react";
+import s from "./Navbar.module.css";
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { logOut } from "../redux/actions/actions";
+import { State } from "../../types";
+
+type Props = {
+  logOut: () => { type: string };
+  isUserLogged: boolean;
+};
+const Navbar: React.FC<Props> = (props: Props) => {
+  const { isUserLogged } = props;
+  return (
+    <div className={s.header}>
+      <Link className={s.nav_link} to="/">
+        Employee List
+      </Link>
+      <Link className={s.nav_link} to="/projects">
+        Projects
+      </Link>
+      {isUserLogged ? (
+        <Link
+          to="/auth"
+          className={s.nav_link}
+          onClick={() => {
+            props.logOut();
+          }}
+        >
+          Log out
+        </Link>
+      ) : (
+        <Link className={s.nav_link} to="/auth">
+          Log in
+        </Link>
+      )}
+    </div>
+  );
+};
+const mapStateToProps = (state: State) => ({
+  isUserLogged: state.isUserLogged,
+});
+const mapDispatchToProps = {
+  logOut,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

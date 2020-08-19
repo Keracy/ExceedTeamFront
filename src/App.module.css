@@ -5,5 +5,5 @@ body {
 * {
   box-sizing: inherit;
   text-decoration: none;
-  font-family: "Roboto";
+  font-family: "Roboto", sans-serif;
 }

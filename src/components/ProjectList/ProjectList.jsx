@@ -55,8 +55,7 @@ const ProjectsTable = (props) => {
                 <Button>
                   <img
                     alt="avatar"
-                    // src={`https://robohash.org/${dev}?set=set5`}
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Brendan_Eich_Mozilla_Foundation_official_photo.jpg/1024px-Brendan_Eich_Mozilla_Foundation_official_photo.jpg"
+                    src={`https://robohash.org/${dev}?set=set5`}
                     style={{ width: 50, borderRadius: "50%" }}
                   />
                 </Button>
@@ -134,7 +133,6 @@ const ProjectsTable = (props) => {
               setTableState((prevState) => {
                 const data = [...prevState.data];
                 data.push(newData);
-                console.log(newData);
                 props.addProject(newData);
                 return { ...prevState, data: data };
               });
